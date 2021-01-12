@@ -7,18 +7,17 @@ namespace Plugins.Transition.Scripts
     {
         private void Start()
         {
-            TransitionIn(new Fade(), 2f,
-                () => TransitionIn(new Pixelate(), 3f, ExampleMethod));
-            
+            TransitionIn(new FadeTransition(), 2f, 
+                () => TransitionIn(new PixelateTransition(), 3f, ExampleMethod));
         }
 
         public void TransitionIn(TransitionType transitionType, float time, Action onComplete = null)
         {
             //perform the transition (eg.Fade In) over the duration (time)
-            Debug.Log($"Transitioning In : {transitionType} over {time} seconds. OnComplete perform method {onComplete}");
+            Debug.Log($"Transitioning In : {transitionType} over {time} seconds. OnComplete perform method {onComplete?.Method}");
             onComplete?.Invoke();
         }
-
+        
         public void TransitionOut(float time, Action onComplete)
         {
             throw new NotImplementedException();

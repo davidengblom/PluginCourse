@@ -11,25 +11,27 @@ namespace Plugins.Transition.Scripts
            MakeTransition();
         }
 
-        public abstract void MakeTransition();
+        protected abstract void MakeTransition();
 
+        public static TransitionType Fade => new FadeTransition();
     }
 
-    public class Fade : TransitionType
+    public class FadeTransition : TransitionType
     {
-        public override void MakeTransition()
+        protected override void MakeTransition()
         {
             Debug.Log("Amazing Fade Transition ermagherd");
         }
     }
 
-    public class Pixelate : TransitionType
+    public class PixelateTransition : TransitionType
     {
-        public override void MakeTransition()
+        protected override void MakeTransition()
         {
             Debug.Log("Amazing Pixelation Transition WoW");
         }
     }
-
-    //public class Spiral : TransitionType { }
+    
+    
+    //public class SpiralTransition : TransitionType { }
 }
