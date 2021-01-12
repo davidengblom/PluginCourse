@@ -1,10 +1,12 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Plugins.Transition.Scripts
 {
-    public abstract class TransitionType
+    public abstract class TransitionType 
     {
         public float Duration { get; set; }
+        public Image image { get; set; }
         
         protected TransitionType()
         {
@@ -14,20 +16,14 @@ namespace Plugins.Transition.Scripts
         protected abstract void MakeTransition();
 
         public static TransitionType Fade => new FadeTransition();
+        public static TransitionType DeLog => new DebugLogTransition();
     }
 
-    public class FadeTransition : TransitionType
+    public class DebugLogTransition : TransitionType
     {
         protected override void MakeTransition()
         {
-            Debug.Log("Amazing Fade Transition ermagherd");
-        }
-    }
-
-    public class PixelateTransition : TransitionType
-    {
-        protected override void MakeTransition()
-        {
+            
             Debug.Log("Amazing Pixelation Transition WoW");
         }
     }

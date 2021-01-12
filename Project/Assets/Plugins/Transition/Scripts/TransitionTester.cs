@@ -1,21 +1,41 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Plugins.Transition.Scripts
 {
     public class TransitionTester : MonoBehaviour, ITransitionManager
     {
+        Camera mainCamera;
         private void Start()
         {
-            TransitionIn(new FadeTransition(), 2f, 
-                () => TransitionIn(new PixelateTransition(), 3f, ExampleMethod));
+            mainCamera = Camera.main;
+            TransitionIn(TransitionType.Fade, 2f);
+            // TransitionIn(new FadeTransition(), 2f);
         }
 
         public void TransitionIn(TransitionType transitionType, float time, Action onComplete = null)
         {
-            //perform the transition (eg.Fade In) over the duration (time)
+            transitionType.Duration = time;
+            // transitionType.image = gameObject.AddComponent<Image>();
+            transitionType.image.material.color = Color.black;
+
+            var canvas = mainCamera.gameObject.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            var image = canvas.gameObject.AddComponent<Image>();
+            image = transitionType.image;
+            
+            Delay();
+            
+            IEnumerator Delay()
+            {
+                yield return new WaitForSeconds(transitionType.Duration);
+            }
+
+            /*//perform the transition (eg.Fade In) over the duration (time)
             Debug.Log($"Transitioning In : {transitionType} over {time} seconds. OnComplete perform method {onComplete?.Method}");
-            onComplete?.Invoke();
+            onComplete?.Invoke();*/
         }
         
         public void TransitionOut(float time, Action onComplete)
