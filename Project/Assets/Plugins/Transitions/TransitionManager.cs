@@ -7,9 +7,23 @@ namespace Plugins.Transition.Scripts
 {
     public class TransitionManager : MonoBehaviour//, ITransitionManager
     {
+        
+        // make a transition using a shader effect on the image
+        // render screenshot onto a 2d texture
+        // apply the rendered texture onto the canvas image
+        // make a transition using a shader effect on the image (e.g. pixelate)   
+        // refactor / abstract stuff in this class.
+        // custom options such as
+        // pause game
+        // image stays
+        // transition to another level
+        
+        
         private GameObject transitionScreen;
         private Image image;
         private Sprite sprite;
+        
+        private static readonly int Intensity = Shader.PropertyToID("_intensity");
 
         [ContextMenu("FadeFromBlack")]
         public void FadeFromBlack()
@@ -28,39 +42,19 @@ namespace Plugins.Transition.Scripts
         [ContextMenu("Take Screenshot")]
         public void TakeScreenShot()
         {
-            StartCoroutine(ScreenCaptureToSprite());
+            StartCoroutine(ScreenCaptureToTexture());
         }
-        
-        IEnumerator ScreenCaptureToSprite()
+
+        [ContextMenu("PixelateIn")]
+        public void PixelateIn()
         {
-            yield return new WaitForEndOfFrame();
-            var texture = ScreenCapture.CaptureScreenshotAsTexture();
-                
-            //sprite = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
-            transitionScreen = new GameObject();
-            var tempCanvas = transitionScreen.AddComponent<Canvas>();
-            tempCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            var image = tempCanvas.gameObject.AddComponent<RawImage>();
-            //texture.Apply();
-            if (texture == null)
-                Debug.Log("texture null");
-            image.texture = texture;
-            //image.sprite = sprite;
-            Debug.Log("Screen captured");
-            
-            //Destroy(texture);
+            StartCoroutine(PixelateTransition());
         }
-        
-        // make a transition using a shader effect on the image
-        // render screenshot onto a 2d texture
-            // apply the rendered texture onto the canvas image
-                // make a transition using a shader effect on the image (e.g. pixelate)   
-        // refactor / abstract stuff in this class.
-        // custom options such as
-            // pause game
-            // image stays
-            // transition to another level
-            
+        [ContextMenu("PixelateOut")]
+        public void PixelateOut()
+        {
+            StartCoroutine(PixelateTransition(false));
+        }
         
         private void CreateFaderObject()
         {
@@ -69,6 +63,7 @@ namespace Plugins.Transition.Scripts
             tempCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
             image = tempCanvas.gameObject.AddComponent<Image>();
         }
+        
         private IEnumerator FadeFromBlack(float Duration)
         {
             Color color = Color.black;
@@ -98,10 +93,49 @@ namespace Plugins.Transition.Scripts
             color.a = 1f;
             CleanUp();
         }
-
-        private void CleanUp()
+        
+        IEnumerator ScreenCaptureToTexture()
         {
-            Destroy(transitionScreen);
+            yield return new WaitForEndOfFrame();
+            
+            CreateFaderObject();
+            var texture = ScreenCapture.CaptureScreenshotAsTexture();
+            
+            //todo
+            
+            Debug.Log("Screen captured");
+            
+            //Destroy(texture);
         }
+        private IEnumerator PixelateTransition(bool pixelate = true, float speed = 2)
+        {
+            CreateFaderObject();
+            ApplyTexture(image.material);
+            var pixelateValue = this.image.material.GetFloat(Intensity);
+            if (pixelate)
+            {
+                while (pixelateValue < 1)
+                {
+                    this.image.material.SetFloat(Intensity, pixelateValue += speed * Time.deltaTime);
+                    yield return null;
+                }
+            }
+            else
+            {
+                while (pixelateValue > 0)
+                {
+                    this.image.material.SetFloat(Intensity, pixelateValue -= speed * Time.deltaTime);
+                    yield return null;
+                }
+            }
+        }
+
+        private void ApplyTexture(Material material)
+        {
+            //todo
+            material.SetTexture("_texture", image.material.mainTexture);
+        }
+
+        private void CleanUp() => Destroy(transitionScreen);
     }
 }
