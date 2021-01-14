@@ -18,6 +18,7 @@ namespace Plugins.Transition.Scripts
 
         public Shader transition;
         private Material mat;
+        private Texture2D texture;
         
         private static readonly int Intensity = Shader.PropertyToID("_intensity");
         private static readonly int Texture = Shader.PropertyToID("_texture");
@@ -44,12 +45,11 @@ namespace Plugins.Transition.Scripts
             this.image.material.SetFloat(Intensity, 0); 
 
             yield return new WaitForEndOfFrame();
-            Texture2D texture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+            texture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
             texture.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0, false);
             texture.Apply();
-
             this.image.material.SetTexture(Texture, texture);
-
+            
             StartCoroutine(DoTransition(true, 0.5f));
         }
         
@@ -72,9 +72,16 @@ namespace Plugins.Transition.Scripts
                     yield return null;
                 }
             }
-            Destroy(this.transitionScreen);
+
+            Cleanup();
         }
-        
+
+        private void Cleanup()
+        {
+            Destroy(transitionScreen);
+            Destroy(texture);
+        }
+
         // [ContextMenu("FadeFromBlack")]
         // public void FadeFromBlack()
         // {
