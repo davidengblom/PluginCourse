@@ -9,7 +9,8 @@ namespace Plugins.Transition.Scripts
     {
         private GameObject transitionScreen;
         private Image image;
-        
+        private Sprite sprite;
+
         [ContextMenu("FadeFromBlack")]
         public void FadeFromBlack()
         {
@@ -23,9 +24,35 @@ namespace Plugins.Transition.Scripts
             CreateFaderObject();
             StartCoroutine(FadeToBlack(1f));
         }
+
+        [ContextMenu("Take Screenshot")]
+        public void TakeScreenShot()
+        {
+            StartCoroutine(ScreenCaptureToSprite());
+        }
+        
+        IEnumerator ScreenCaptureToSprite()
+        {
+            yield return new WaitForEndOfFrame();
+            var texture = ScreenCapture.CaptureScreenshotAsTexture();
+                
+            //sprite = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
+            transitionScreen = new GameObject();
+            var tempCanvas = transitionScreen.AddComponent<Canvas>();
+            tempCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            var image = tempCanvas.gameObject.AddComponent<RawImage>();
+            //texture.Apply();
+            if (texture == null)
+                Debug.Log("texture null");
+            image.texture = texture;
+            //image.sprite = sprite;
+            Debug.Log("Screen captured");
+            
+            //Destroy(texture);
+        }
         
         // make a transition using a shader effect on the image
-        // render the image onto a 2d texture
+        // render screenshot onto a 2d texture
             // apply the rendered texture onto the canvas image
                 // make a transition using a shader effect on the image (e.g. pixelate)   
         // refactor / abstract stuff in this class.
