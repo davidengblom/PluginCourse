@@ -44,11 +44,11 @@ namespace Plugins.Transition.Scripts
             this.image.material.SetFloat(Intensity, 0); 
 
             yield return new WaitForEndOfFrame();
-            var texture = ScreenCapture.CaptureScreenshotAsTexture();
+            Texture2D texture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+            texture.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0, false);
+            texture.Apply();
 
             this.image.material.SetTexture(Texture, texture);
-
-            Debug.Log("Screen captured");
 
             StartCoroutine(DoTransition(true, 0.5f));
         }
