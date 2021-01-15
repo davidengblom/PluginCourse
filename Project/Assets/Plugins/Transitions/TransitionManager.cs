@@ -22,8 +22,15 @@ namespace Plugins.Transition.Scripts
         private static readonly int Intensity = Shader.PropertyToID("_intensity");
         private static readonly int Texture = Shader.PropertyToID("_texture");
 
+        public int width = 1920, height = 1080;
+
         [ContextMenu("Start Transition")]
         public void StartTransition()
+        {
+            StartCoroutine(ScreenCaptureToTexture());
+        }
+
+        private void Start()
         {
             StartCoroutine(ScreenCaptureToTexture());
         }
@@ -44,15 +51,12 @@ namespace Plugins.Transition.Scripts
             this.image.material.SetFloat(Intensity, 0); 
 
             yield return new WaitForEndOfFrame();
-            var texture = ScreenCapture.CaptureScreenshotAsTexture();
 
-            this.image.material.SetTexture(Texture, texture);
-
-            Debug.Log("Screen captured");
+            this.image.material.SetTexture(Texture, ScreenshotToTexture2D());
 
             StartCoroutine(DoTransition(true, 0.5f));
         }
-        
+
         private IEnumerator DoTransition(bool direction = true, float speed = 2)
         {
             var value = this.image.material.GetFloat(Intensity);
@@ -74,7 +78,47 @@ namespace Plugins.Transition.Scripts
             }
             Destroy(this.transitionScreen);
         }
+
+        public Texture2D ScreenshotToTexture2D()
+        {
+            Camera cam = GetComponent<Camera>();
+
+            // Create Render Texture with width and height.
+            RenderTexture rt = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32);
         
+            // Assign Render Texture to camera.
+            cam.targetTexture = rt;
+
+            // save current background settings of the camera
+            CameraClearFlags clearFlags = cam.clearFlags;
+            Color backgroundColor = cam.backgroundColor;
+
+            // Render the camera's view to the Target Texture.
+            cam.Render();
+
+            // Save the currently active Render Texture so we can override it.
+            RenderTexture currentRT = RenderTexture.active;
+
+            // ReadPixels reads from the active Render Texture.
+            RenderTexture.active = cam.targetTexture;
+
+            // Make a new texture and read the active Render Texture into it.
+            Texture2D screenshot = new Texture2D(width, height, TextureFormat.ARGB32, false);
+            screenshot.ReadPixels(new Rect(0, 0, width, height), 0, 0, false);
+
+            // PNGs should be sRGB so convert to sRGB color space when rendering in linear.
+            if(QualitySettings.activeColorSpace == ColorSpace.Linear) {
+                Color[] pixels = screenshot.GetPixels();
+                for(int p = 0; p < pixels.Length; p++) {
+                    pixels[p] = pixels[p].gamma;
+                }
+                screenshot.SetPixels(pixels);
+            }
+
+            // Apply the changes to the screenshot texture.
+            screenshot.Apply(false);
+            return screenshot;
+        }
         // [ContextMenu("FadeFromBlack")]
         // public void FadeFromBlack()
         // {
