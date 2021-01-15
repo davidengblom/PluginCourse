@@ -204,7 +204,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1594445092}
-        m_MethodName: LoadSceneButton
+        m_MethodName: LoadSceneWithTransition
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2393,6 +2393,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: TransitionManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 7407253426254287580, guid: 9a5ff41ea5841e942a513b879cfa7e86,
+        type: 3}
+      propertyPath: playTransitionOnStart
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7407253426254287580, guid: 9a5ff41ea5841e942a513b879cfa7e86,
+        type: 3}
+      propertyPath: startTransitionMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: bacdab8701da9bf4e90dab35f2f7e5c0, type: 2}
+    - target: {fileID: 7407253426254287580, guid: 9a5ff41ea5841e942a513b879cfa7e86,
+        type: 3}
+      propertyPath: startTransitionDuration
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7407253426254287581, guid: 9a5ff41ea5841e942a513b879cfa7e86,
         type: 3}

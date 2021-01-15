@@ -13,38 +13,78 @@ namespace Plugins.TransitionManager.Script
         public Material fadeMaterial;
         public Material pixelMaterial;
 
-        private void Awake()
-        {
-            DontDestroyOnLoad(this.gameObject);
-        }
+        [Header("Play transition on start")]
+        [Tooltip("A transition is performed on start")]public bool playTransitionOnStart = false;
+        public Material startTransitionMaterial;
+        public float startTransitionDuration = 1f;
+        [Tooltip("Toggles the type of transition. Set to true to transition in")] public bool startTransitionIn = true;
 
-        // MVP
-        // Make example second scene
-        // Make transition to next scene method
-        // Make readme
-        // Example script
-        // get rid of debug logs
-        
-        // export plugin
-        // TEST!!! plugin in a clean project.
-        // make presentation
-        
-
-        // EXTRA
+        // EXTRA TODO
             // Allow user to change fade type by method call.
-            // make readme
             // refactor / abstract stuff in this class.
             // custom options such as
             // pause game
-            // image stays
+            // optional if image stays
             // transition to another level
             // make transition by providing material and duration
 
-        public void LoadSceneButton(string path)
+            private void Start()
+        {
+            if (playTransitionOnStart)
+            {
+                if (startTransitionMaterial == null)
+                {
+                    Debug.LogWarning("Must provide startmaterial for start fade to function. Using fadeMaterial by default.");
+                    startTransitionMaterial = fadeMaterial;
+                }
+                PlayDefaultTransition(startTransitionMaterial, startTransitionDuration, startTransitionIn);
+            }
+        }
+        
+        public void PlayDefaultTransition(Material material, float duration = 1f, bool transitionIn = false)
+        {
+            if (transitionIn)
+            {
+                PlayCustomTransition(TransitionIn, material, duration);
+            }
+            else
+            {
+                PlayCustomTransition(TransitionOut, material, duration);
+            }
+        }
+
+        public void PlayCustomTransition(Func<Material, float, IEnumerator> transition, Material material, float duration)
+        {
+            if (material == null)
+            {
+                Debug.LogError("No material found, not playing transition. Please provide start material");
+                return;
+            }
+            _transitionRender.ChangeMaterial(material);
+            StartCoroutine(transition(material, duration));
+        }
+
+        private IEnumerator TransitionOutAndSwitchLevel(string path, float duration = 3f)
+        {
+            if (fadeMaterial == null)
+            {
+                Debug.LogError("Material not found");
+                yield return null;
+            }
+            yield return StartCoroutine(TransitionOut(fadeMaterial, duration));
+            StartCoroutine(LoadAsynchronously(path));
+        }
+
+        public void LoadSceneWithTransition(string path)
+        {
+            StartCoroutine(TransitionOutAndSwitchLevel(path));
+        }
+
+        public void LoadSceneWithoutTransition(string path)
         {
             StartCoroutine(LoadAsynchronously(path));
         }
-        
+
         public void FadeIn(float duration = 1f)
         {
             _transitionRender.ChangeMaterial(fadeMaterial);
@@ -60,7 +100,6 @@ namespace Plugins.TransitionManager.Script
         public void PixelateIn(float duration = 1f)
         {
             _transitionRender.ChangeMaterial(pixelMaterial);
-            // PerformTransition(Pixelate, pixelMaterial, 3f);
             StartCoroutine(TransitionIn(pixelMaterial,duration));
         }
         
@@ -93,7 +132,6 @@ namespace Plugins.TransitionManager.Script
                 yield return null;
             }
             material.SetFloat("_Intensity", 0f);
-            Debug.Log("End fade in");
         }
 
         IEnumerator LoadAsynchronously(string path)
@@ -102,7 +140,6 @@ namespace Plugins.TransitionManager.Script
             while (!load.isDone)
             {
                 float progress = Mathf.Clamp01(load.progress / .9f);
-                Debug.Log(progress);
                 yield return null;
             }
         }
