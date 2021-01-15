@@ -12,5 +12,4 @@ Usually the default renderer is found in Settings/ForwardRenderer.
 Add render feature in the hierarchy. 
 Drag in the transitionManager prefab.
 Set the transition renderer to the newly created render feature scriptable object.
-----
 
