@@ -2,8 +2,10 @@
 A plugin for implementing and managing transitions between scenes.
 
 ### Version details
+```
 -Rough outline
 -Tested with Unity version 2019.4.15f1
+```
 
 ## How to use
 
