@@ -62,7 +62,7 @@ Material:
     - _MaxPixelation: 200
     - _Metallic: 0
     - _OcclusionStrength: 1
-    - _PixelAmount: 0
+    - _PixelAmount: 0.20954233
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _Smoothness: 0.5

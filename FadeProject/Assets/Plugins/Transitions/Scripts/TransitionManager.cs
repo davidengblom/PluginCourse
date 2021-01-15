@@ -12,6 +12,7 @@ namespace Plugins.Transitions.Scripts
         
         public TransitionRenderPassFeature _transitionRender;
 
+        
         public void PerformTransition<T>(Func<Material, float, T, IEnumerator> transition, Material material, float duration, T t)
         {
             Debug.Log("Generic transition started");
