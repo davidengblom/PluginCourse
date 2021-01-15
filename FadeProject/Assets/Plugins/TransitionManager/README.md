@@ -13,9 +13,9 @@ A plugin for implementing and managing transitions between scenes.
 1. Create URP project. 
 2. Open Test Scene
 3. Drag in and install plugin.
-4. Locate default renderer ( can be found on the main camera))
+4. Locate default renderer (can be found on the main camera)
 5. Usually the default renderer is found in Settings/ForwardRenderer.
-6. Add render feature in the hierarchy. 
+6. Add render feature in the inspector. 
 7. Drag in the transitionManager prefab.
 8. Set the transition renderer to the newly created render feature scriptable object.
 ```
